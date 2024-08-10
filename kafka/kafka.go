@@ -40,7 +40,7 @@ func KafkaInit() {
 		wg.Add(1)
 		go func(partition int32) {
 			defer wg.Done()
-			pc, err := consumer.ConsumePartition("web_log", partition, sarama.OffsetOldest)
+			pc, err := consumer.ConsumePartition("web_log", partition, sarama.OffsetNewest)
 			if err != nil {
 				log.Printf("Failed to start consumer for partition %d: %v", partition, err)
 				return
