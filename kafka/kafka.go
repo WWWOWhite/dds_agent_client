@@ -3,6 +3,7 @@ package kafka
 import (
 	"fmt"
 	"github.com/IBM/sarama"
+	"go.uber.org/zap"
 	"log"
 	"os"
 	"os/signal"
@@ -11,9 +12,14 @@ import (
 )
 
 func KafkaInit() {
+	// 创建一个生产环境的 Zap logger
+	logger, _ := zap.NewProduction()
+	defer logger.Sync() // 确保日志缓冲区被刷新
+
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = true
 
+	log.Println("start connect to kafka")
 	consumer, err := sarama.NewConsumer([]string{"47.98.225.138:9092"}, config)
 	defer func() {
 		if err := consumer.Close(); err != nil {
@@ -30,8 +36,10 @@ func KafkaInit() {
 		fmt.Printf("fail to get list of partition:err%v\n", err)
 		return
 	}
-	fmt.Println(partitionList)
-
+	logger.Info(
+		"partitionList :",
+		zap.Any("partitionList", partitionList),
+	)
 	var wg sync.WaitGroup
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)

@@ -1,6 +1,8 @@
 package main
 
-import "dds_agent_client/kafka"
+import (
+	"dds_agent_client/kafka"
+)
 
 // kafka consumer
 
